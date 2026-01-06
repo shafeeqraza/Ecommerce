@@ -14,6 +14,7 @@ use App\Services\CartService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class CartServiceTest extends TestCase
@@ -46,7 +47,7 @@ class CartServiceTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_existing_cart_for_user(): void
     {
         $user = User::factory()->create();
@@ -63,7 +64,7 @@ class CartServiceTest extends TestCase
         $this->assertEquals($cart->id, $result->id);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_new_cart_when_none_exists(): void
     {
         $user = User::factory()->create();
@@ -86,7 +87,7 @@ class CartServiceTest extends TestCase
         $this->assertEquals($newCart->id, $result->id);
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_cart_total_correctly(): void
     {
         $user = User::factory()->create();

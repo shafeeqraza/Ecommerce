@@ -10,6 +10,7 @@ use App\Models\CartItem;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class CartTest extends TestCase
@@ -33,7 +34,7 @@ class CartTest extends TestCase
         $this->cartService = app(CartServiceInterface::class);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_add_item_to_cart(): void
     {
         $cartItem = $this->cartService->addItemToCart(
@@ -51,7 +52,7 @@ class CartTest extends TestCase
         $this->assertEquals(8, $this->product->stock_quantity);
     }
 
-    /** @test */
+    #[Test]
     public function it_cannot_add_more_items_than_available_stock(): void
     {
         $this->expectException(InsufficientStockException::class);
@@ -63,7 +64,7 @@ class CartTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_cart_when_adding_first_item(): void
     {
         $this->assertNull(Cart::where('user_id', $this->user->id)->first());
@@ -77,7 +78,7 @@ class CartTest extends TestCase
         $this->assertNotNull(Cart::where('user_id', $this->user->id)->first());
     }
 
-    /** @test */
+    #[Test]
     public function it_increases_quantity_when_adding_existing_product_to_cart(): void
     {
         // Add product first time
@@ -93,7 +94,7 @@ class CartTest extends TestCase
         $this->assertEquals(5, $this->product->stock_quantity);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_update_cart_item_quantity(): void
     {
         // Add item to cart
@@ -112,7 +113,7 @@ class CartTest extends TestCase
         $this->assertEquals(5, $this->product->stock_quantity);
     }
 
-    /** @test */
+    #[Test]
     public function it_restores_stock_when_decreasing_cart_item_quantity(): void
     {
         // Add item with quantity 5
@@ -126,7 +127,7 @@ class CartTest extends TestCase
         $this->assertEquals(8, $this->product->stock_quantity);
     }
 
-    /** @test */
+    #[Test]
     public function it_cannot_update_cart_item_to_exceed_available_stock(): void
     {
         // Add item with quantity 5
@@ -138,7 +139,7 @@ class CartTest extends TestCase
         $this->cartService->updateCartItem($cartItem->id, 15);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_remove_item_from_cart(): void
     {
         // Add item to cart
@@ -155,7 +156,7 @@ class CartTest extends TestCase
         $this->assertEquals(10, $this->product->stock_quantity);
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_cart_total_correctly(): void
     {
         $product2 = Product::factory()->create([
@@ -172,7 +173,7 @@ class CartTest extends TestCase
         $this->assertEquals(109.97, $total);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_zero_total_for_empty_cart(): void
     {
         $total = $this->cartService->getCartTotal($this->user->id);
@@ -180,7 +181,7 @@ class CartTest extends TestCase
         $this->assertEquals(0.0, $total);
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_cart_items_count_correctly(): void
     {
         $product2 = Product::factory()->create(['stock_quantity' => 5]);
@@ -194,7 +195,7 @@ class CartTest extends TestCase
         $this->assertEquals(5, $count); // 2 + 3 = 5
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_empty_collection_when_cart_has_no_items(): void
     {
         $items = $this->cartService->getCartItems($this->user->id);
@@ -202,7 +203,7 @@ class CartTest extends TestCase
         $this->assertTrue($items->isEmpty());
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_concurrent_cart_operations_with_transactions(): void
     {
         // This test verifies that transactions prevent race conditions
@@ -220,7 +221,7 @@ class CartTest extends TestCase
         $this->cartService->addItemToCart($this->user->id, $product->id, 2);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_false_when_updating_nonexistent_cart_item(): void
     {
         $result = $this->cartService->updateCartItem(99999, 5);
@@ -228,7 +229,7 @@ class CartTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_false_when_removing_nonexistent_cart_item(): void
     {
         $result = $this->cartService->removeCartItem(99999);

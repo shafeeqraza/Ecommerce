@@ -6,6 +6,7 @@ use App\Contracts\Services\ProductServiceInterface;
 use App\Exceptions\InsufficientStockException;
 use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class StockTest extends TestCase
@@ -21,7 +22,7 @@ class StockTest extends TestCase
         $this->productService = app(ProductServiceInterface::class);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_check_stock_availability(): void
     {
         $product = Product::factory()->create(['stock_quantity' => 10]);
@@ -31,7 +32,7 @@ class StockTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_throws_exception_when_stock_is_insufficient(): void
     {
         $product = Product::factory()->create(['stock_quantity' => 5]);
@@ -42,7 +43,7 @@ class StockTest extends TestCase
         $this->productService->checkStockAvailability($product->id, 10);
     }
 
-    /** @test */
+    #[Test]
     public function it_throws_exception_when_product_not_found(): void
     {
         $this->expectException(InsufficientStockException::class);
@@ -51,7 +52,7 @@ class StockTest extends TestCase
         $this->productService->checkStockAvailability(99999, 5);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_decrease_stock_with_locking(): void
     {
         $product = Product::factory()->create(['stock_quantity' => 10]);
@@ -65,7 +66,7 @@ class StockTest extends TestCase
         $this->assertEquals(7, $product->stock_quantity);
     }
 
-    /** @test */
+    #[Test]
     public function it_throws_exception_when_decreasing_more_than_available_stock(): void
     {
         $product = Product::factory()->create(['stock_quantity' => 5]);
@@ -75,7 +76,7 @@ class StockTest extends TestCase
         $this->productService->decreaseStock($product->id, 10);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_increase_stock_with_locking(): void
     {
         $product = Product::factory()->create(['stock_quantity' => 10]);
@@ -89,7 +90,7 @@ class StockTest extends TestCase
         $this->assertEquals(15, $product->stock_quantity);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_null_when_increasing_stock_for_nonexistent_product(): void
     {
         $result = $this->productService->increaseStock(99999, 5);
@@ -97,7 +98,7 @@ class StockTest extends TestCase
         $this->assertNull($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_race_conditions_with_database_locking(): void
     {
         $product = Product::factory()->create(['stock_quantity' => 10]);
@@ -114,7 +115,7 @@ class StockTest extends TestCase
         $this->productService->decreaseStock($product->id, 5);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_stock_restoration_correctly(): void
     {
         $product = Product::factory()->create(['stock_quantity' => 10]);
